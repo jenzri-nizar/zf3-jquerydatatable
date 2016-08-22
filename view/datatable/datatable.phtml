@@ -1,0 +1,48 @@
+<?php
+$columnsKey=array_keys($columns);
+?>
+<div class="col-md-12">
+    <table class="table table-striped table-bordered" id="datatable_<?php echo $ref?>">
+        <thead>
+        <tr role="row" class="heading">
+            <?php
+            foreach($columns as $key =>$val)
+            {
+                ?>
+                <th class="datatable datatable_cl_<?php echo $ref?>_<?php echo $key?>" >
+                   <?php  echo $val ?>
+                 </th>
+                <?php
+            }
+            ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        if(! $ajax)
+        foreach($paginator as $item){
+            ?>
+            <tr>
+                <?php
+
+                foreach($columnsKey as $key){
+                    ?>
+                        <td>
+                            <?php
+                            if(is_object($item) &&  property_exists ($item,$key)){
+                                echo $item->{$key};
+                            }
+                            if(is_array($item) &&  array_key_exists ($key,$item)){
+                                echo $item[$key];
+                            }?>
+                        </td>
+                    <?php
+                }
+                ?>
+            </tr>
+        <?php
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
