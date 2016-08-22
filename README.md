@@ -24,3 +24,7 @@ View
 ```php
 <?php echo $this->datatable("152541");?>
 ```
+
+
+#Resulta
+![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/img.png)
