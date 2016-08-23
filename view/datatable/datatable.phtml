@@ -1,7 +1,19 @@
 <?php
+$ElementAlowType=["date","datetime","email","number","range","tel","time","url","text","select","datetime-local","checkbox","radio","multi_checkbox"];
 $columnsKey=array_keys($columns);
+$IsCustomSearch=false;
+$ArrayInput=array();
+foreach($columns as $key =>$val)
+{
+    $ArrayInput[$key]=[];
+    if(array_key_exists("search",$val) &&( array_keys($val['search']) !== range(0, count($val['search']) - 1))){
+        $ArrayInput[$key]=$val['search'];
+        $IsCustomSearch=true;
+    }
+}
 ?>
 <div class="col-md-12">
+    <form id="JqueryDataTableFormFilter">
     <table class="table table-striped table-bordered" id="datatable_<?php echo $ref?>">
         <thead>
         <tr role="row" class="heading">
@@ -10,23 +22,101 @@ $columnsKey=array_keys($columns);
             {
                 ?>
                 <th class="datatable datatable_cl_<?php echo $ref?>_<?php echo $key?>" >
-                   <?php  echo $val ?>
-                 </th>
+                    <?php  echo array_key_exists("label",$val) ? $val['label'] : $key?>
+                </th>
                 <?php
             }
             ?>
         </tr>
+        <?php
+        if($IsCustomSearch){
+            ?>
+
+            <tr role="row" class="filter">
+
+                <?php
+
+                foreach($ArrayInput as $key=>$InputConfig){
+                    $colindex=$key;
+                    echo"<td>";
+                    if(!empty($InputConfig)){
+                        $filtertype=strtolower (array_key_exists("type",$InputConfig) ? $InputConfig['type'] :"text");
+                        if($filtertype=="between"){
+                            $from =array_key_exists("from",$InputConfig) ? $InputConfig['from'] :null;
+                            $to =array_key_exists("to",$InputConfig) ? $InputConfig['to'] :null;
+                            if($from instanceof Zend\Form\Element){
+                                $from->setName("inputfilter[$colindex][from]");
+                                $type=$from->getAttribute("type");
+                                if(in_array($type,$ElementAlowType)){
+                                    switch($type){
+                                        case "select":echo $this->formSelect($from);break;
+                                        default:echo $this->formInput($from);break;
+                                    }
+
+                                }
+                            }
+                            if($to instanceof Zend\Form\Element){
+                                $type=$to->getAttribute("type");
+                                $to->setName("inputfilter[$colindex][to]");
+                                if(in_array($type,$ElementAlowType)){
+                                    switch($type){
+                                        case "select":echo $this->formSelect($to);break;
+                                        default:echo $this->formInput($to);break;
+                                    }
+
+                                }
+                            }
+                        }
+                        else{
+                            $element =array_key_exists("element",$InputConfig) ? $InputConfig['element'] :null;
+
+                            if($element instanceof Zend\Form\Element){
+                                $type=$element->getAttribute("type");
+                                $element->setName("inputfilter[$colindex]");
+                                if(in_array($type,$ElementAlowType)){
+
+                                    switch($type){
+                                        case "select":echo $this->formSelect($element);break;
+                                        case "datetime-local":echo $this->FormDateTimeLocal($element);break;
+                                        //case "checkbox" : echo $this->FormCheckbox($element);break;
+                                        case "radio" : echo $this->FormRadio($element);break;
+                                        case "date" : echo $this->FormDate($element);break;
+                                        case "datetime" : echo $this->FormDateTime($element);break;
+                                        case "email" : echo $this->FormEmail($element);break;
+                                        case "number" : echo $this->FormNumber($element);break;
+                                        case "range" : echo $this->FormRange($element);break;
+                                        case "tel" : echo $this->FormTel($element);break;
+                                        case "time" : echo $this->FormTime($element);break;
+                                        case "url" : echo $this->FormUrl($element);break;
+                                        case "multi_checkbox" : echo $this->FormMultiCheckbox($element,'prepend');break;
+
+                                        default:echo $this->formRow($element);break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    echo"</td>";
+
+                }
+                ?>
+
+            </tr>
+
+            <?php
+        }
+        ?>
         </thead>
         <tbody>
         <?php
         if(! $ajax)
-        foreach($paginator as $item){
-            ?>
-            <tr>
-                <?php
+            foreach($paginator as $item){
+                ?>
+                <tr>
+                    <?php
 
-                foreach($columnsKey as $key){
-                    ?>
+                    foreach($columnsKey as $key){
+                        ?>
                         <td>
                             <?php
                             if(is_object($item) &&  property_exists ($item,$key)){
@@ -36,13 +126,14 @@ $columnsKey=array_keys($columns);
                                 echo $item[$key];
                             }?>
                         </td>
-                    <?php
-                }
-                ?>
-            </tr>
-        <?php
-        }
+                        <?php
+                    }
+                    ?>
+                </tr>
+                <?php
+            }
         ?>
         </tbody>
     </table>
+    </form>
 </div>

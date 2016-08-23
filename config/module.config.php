@@ -9,7 +9,7 @@ namespace Datatable;
 return [
     'controller_plugins' => [
         'invokables' => [
-            'DataTable' =>\Datatable\Controller\Plugin\DataTable::class,
+            'DataTable' =>Controller\Plugin\DataTable::class,
         ]
     ]
 ];

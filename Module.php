@@ -13,7 +13,7 @@ use Zend\Mvc\MvcEvent;
 
 class Module
 {
-    public function loadConfiguration(MvcEvent $e)
+   /* public function loadConfiguration(MvcEvent $e)
     {
         $application   = $e->getApplication();
         $sm            = $application->getServiceManager();
@@ -25,7 +25,7 @@ class Module
                 },2
         );
         
-    }
+    }*/
     public function onBootstrap(MvcEvent $e)
     {
         $eventManager = $e->getApplication()->getEventManager();
@@ -40,7 +40,7 @@ class Module
         );
 
 
-        $sm->get('ViewHelperManager')->setFactory('datatable', function($sm) use ($sm) {
+        $sm->get('ViewHelperManager')->setFactory('datatable', function($e) use ($sm) {
             $viewHelper = new \Datatable\View\Helper\Datatable(
                 $sm
             );
@@ -64,4 +64,12 @@ class Module
         );
     }
 
+
+    public function getControllerPluginConfig() {
+        return array(
+            'invokables' => array(
+                'DataTable' =>Controller\Plugin\DataTable::class,
+            )
+        );
+    }
 }

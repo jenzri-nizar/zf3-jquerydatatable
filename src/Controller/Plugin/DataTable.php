@@ -9,6 +9,7 @@
 namespace Datatable\Controller\Plugin;
 
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+
 class DataTable  extends AbstractPlugin
 {
 
@@ -141,19 +142,28 @@ class DataTable  extends AbstractPlugin
             $page=($page/$length)+1;
             $paginator->setCurrentPageNumber($page);
             $paginator->setDefaultItemCountPerPage($length);
-            foreach($paginator as $item){
-                $_item=[];
-                foreach($columnsKey as $key){
-                    if(is_object($item) &&  property_exists ($item,$key)){
-                        $_item[]= $item->{$key};
-                    }
-                    if(is_array($item) &&  array_key_exists ($key,$item)){
-                        $_item[]= $item[$key];
-                    }
+            try{
+                foreach($paginator as $item){
+                    $_item=[];
+                    foreach($columnsKey as $key){
+                        if(is_object($item) &&  property_exists ($item,$key)){
+                            $_item[]= $item->{$key};
+                        }
+                        else if(is_array($item) &&  array_key_exists ($key,$item)){
+                            $_item[]= $item[$key];
+                        }
+                        else{
+                            $_item[]="";
+                        }
 
+                    }
+                    $data["data"][]=$_item;
                 }
-                $data["data"][]=$_item;
             }
+            catch(\Exception $e){
+
+            }
+
 
             $data["draw"]=isset($_GET['start']) ? $_GET['draw']:1;
             $data["recordsFiltered"]=$paginator->getTotalItemCount();
