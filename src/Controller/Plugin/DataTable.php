@@ -18,6 +18,62 @@ class DataTable  extends AbstractPlugin
 
     private $Adapter;
 
+    protected $language_codes = array(
+        'en' => 'English' ,
+        'af' => 'Afrikaans' ,
+        'ar' => 'Arabic' ,
+        'bg' => 'Bulgarian' ,
+        'ca' => 'Catalan' ,
+        'cs' => 'Czech' ,
+        'cy' => 'Welsh' ,
+        'da' => 'Danish' ,
+        'de' => 'German' ,
+        'el' => 'Greek' ,
+        'es' => 'Spanish' ,
+        'et' => 'Estonian' ,
+        'eu' => 'Basque' ,
+        'fa' => 'Persian' ,
+        'fr' => 'French' ,
+        'ga' => 'Irish' ,
+        'gl' => 'Galician' ,
+        'gu' => 'Gujarati' ,
+        'hi' => 'Hindi' ,
+        'hr' => 'Croatian' ,
+        'hu' => 'Hungarian' ,
+        'hy' => 'Armenian' ,
+        'in' => 'Indonesian' ,
+        'is' => 'Icelandic' ,
+        'it' => 'Italian' ,
+        'ja' => 'Japanese' ,
+        'ka' => 'Georgian' ,
+        'ko' => 'Korean' ,
+        'lt' => 'Lithuanian' ,
+        'lv' => 'Latvian' ,
+        'mk' => 'Macedonian' ,
+        'ms' => 'Malay' ,
+        'ne' => 'Nepali' ,
+        'nl' => 'Dutch' ,
+        'no' => 'Norwegian' ,
+        'pl' => 'Polish' ,
+        'pt' => 'Portuguese' ,
+        'ro' => 'Romanian' ,
+        'ru' => 'Russian' ,
+        'sh' => 'Croatian' ,
+        'sk' => 'Slovak' ,
+        'sl' => 'Slovenian' ,
+        'sq' => 'Albanian' ,
+        'sr' => 'Serbian' ,
+        'sv' => 'Swedish' ,
+        'sw' => 'Swahili' ,
+        'ta' => 'Tamil' ,
+        'th' => 'Thai' ,
+        'tr' => 'Turkish' ,
+        'uk' => 'Ukrainian' ,
+        'ur' => 'Urdu' ,
+        'uz' => 'Uzbek' ,
+        'vi' => 'Vietnamese' ,
+        'zh' => 'Chinese' ,
+    );
 
     /**
      * @return \Zend\Db\Adapter\AdapterInterface;
@@ -56,11 +112,16 @@ class DataTable  extends AbstractPlugin
         $defaults = [
                         'ajax'=>false,
                         'columns' => [],
-                        'model' => null
+                        'model' => null,
+                        'lang'=>"English",
+                        'search_label'=>"Search"
         ];
         $Config = array_merge($defaults, $Config);
         if(empty($Config['columns'])){
             throw  new \Exception('Error columns');
+        }
+        if(! empty($Config['lang'])){
+            $Config['lang']=array_key_exists($Config['lang'],$this->language_codes) ? $this->language_codes[$Config['lang']] :"English";
         }
         if(! is_object($Config['model']) || !($Config['model'] instanceof  \Zend\Db\TableGateway\AbstractTableGateway)){
             throw  new \Exception('Error Model');

@@ -106,12 +106,15 @@ class Datatable extends AbstractHelper
             $columns=$config['columns'];
             $paginator=$config['paginator'];
             $ajax=$config['ajax'];
+            $lang=$config['lang'];
+            $search_label=$config['search_label'];
             $View=new \Zend\View\Model\ViewModel();
             $View->setVariables(array(
                 "columns"=>$columns,
                 "paginator"=>$paginator,
                 "ref"=>$ref,
-                "ajax"=>$ajax
+                "ajax"=>$ajax,
+                "lang"=>$lang
             ));
 
             $html='';
@@ -120,7 +123,11 @@ class Datatable extends AbstractHelper
                 $script='
 
                       $(function(){
-                        $("#datatable_'.$ref.'").dataTable();
+                        $("#datatable_'.$ref.'").dataTable({
+                        "language": {
+                                "url": "http://cdn.datatables.net/plug-ins/1.10.12/i18n/'.$lang.'.json"
+                            }
+                        });
                       })
                   ';
 
@@ -156,6 +163,9 @@ $.each(this.serializeArray(),function(){
 
                       $(function(){
                         $("#datatable_'.$ref.'").dataTable({
+                            "language": {
+                                "url": "http://cdn.datatables.net/plug-ins/1.10.12/i18n/'.$lang.'.json"
+                            },
                             "processing": true,
                             "serverSide": true,
                             "ajax": { // define ajax settings
@@ -172,7 +182,7 @@ $.each(this.serializeArray(),function(){
                             "dom": "Bfrtip",
                              buttons: [
                                 {
-                                    "text": "Search",
+                                    "text": "'.$search_label.'",
                                     "className":"btn btn-default BtnjQueryDataTableFilter",
                                     "action": function ( e, dt, node, config ) {
                                         dt.ajax.reload();
