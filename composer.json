@@ -1,0 +1,20 @@
+{
+  "name": "jenzri-nizar/zf3-jquerydatatable",
+  "description": "Zend Framework 3 Jquery DataTable",
+  "keywords": ["zend Framework 3", "Jquery DataTable", "Jquery","DataTable"],
+  "license": [
+    "MIT"
+  ],
+  "authors": [
+    {
+      "name": "Jenzri Nizar",
+      "email": "jenzri.nizar.off@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-4": { "Zf3\\Jquerydatatable\\": "src/" }
+  }
+}
