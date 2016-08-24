@@ -98,7 +98,7 @@ class DataTable  extends AbstractPlugin
         $this->Configs[$ref] = $Config;
         //$paginator=new \Zend\Paginator\Paginator();
         //$paginator->getAdapter();
-        if(isset($_GET['ajax']) && $_GET['ajax']=="true"){
+        if(isset($_GET['ajax']) && $_GET['ajax']=="true"  && isset($_GET['jquerytableref']) && $_GET['jquerytableref']==$ref){
             $this->AjaxCall($Config);
             exit;
         }

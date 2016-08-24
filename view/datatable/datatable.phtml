@@ -13,7 +13,8 @@ foreach($columns as $key =>$val)
 }
 ?>
 <div class="col-md-12">
-    <form id="JqueryDataTableFormFilter">
+    <form id="JqueryDataTableFormFilter_<?php echo $ref?>">
+        <input name="jquerytableref" type="hidden" value="<?php echo $ref?>">
     <table class="table table-striped table-bordered" id="datatable_<?php echo $ref?>">
         <thead>
         <tr role="row" class="heading">
@@ -29,7 +30,7 @@ foreach($columns as $key =>$val)
             ?>
         </tr>
         <?php
-        if($IsCustomSearch){
+        if($IsCustomSearch && $ajax){
             ?>
 
             <tr role="row" class="filter">

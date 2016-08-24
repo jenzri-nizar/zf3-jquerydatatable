@@ -9,6 +9,7 @@ namespace Datatable\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\InlineScript;
+use Zend\View\Helper\HeadLink;
 class Datatable extends AbstractHelper
 {
 
@@ -16,13 +17,34 @@ class Datatable extends AbstractHelper
 
     private $datatable;
 
+    private $headLink;
+
     private $sm;
+
     public function __construct($sm)
     {
         $this->setSm($sm);
         $this->setDatatable($sm->get('ControllerPluginManager')->get('DataTable'));
         $this->setInlineScript($sm->get('ViewHelperManager')->get("inlinescript"));
+        $this->setHeadLink($sm->get('ViewHelperManager')->get("headLink"));
     }
+
+    /**
+     * @return HeadLink
+     */
+    public function getHeadLink()
+    {
+        return $this->headLink;
+    }
+
+    /**
+     * @param HeadLink $headLink
+     */
+    public function setHeadLink($headLink)
+    {
+        $this->headLink = $headLink;
+    }
+
 
     /**
      * @return InlineScript
@@ -75,6 +97,10 @@ class Datatable extends AbstractHelper
 
     public function __invoke($ref=null)
     {
+        $this->getInlineScript()->appendFile("https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js");
+        $this->getInlineScript()->appendFile("https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js");
+        $this->getHeadLink()->prependStylesheet("https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css");
+
        $config= $this->getDatatable()->getConfig($ref);
         if($config){
             $columns=$config['columns'];
@@ -88,22 +114,20 @@ class Datatable extends AbstractHelper
                 "ajax"=>$ajax
             ));
 
-            $html='<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
-                <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-                <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
-';
+            $html='';
+
             if(!$ajax){
-                $html.='
-                   <script>
+                $script='
+
                       $(function(){
                         $("#datatable_'.$ref.'").dataTable();
                       })
-                  </script>';
+                  ';
 
             }
             else{
-                $html.='
-                   <script>
+                $script='
+
                    $.fn.serializeControls=function(){
 	var keyindex=0;
 
@@ -137,7 +161,7 @@ $.each(this.serializeArray(),function(){
                             "ajax": { // define ajax settings
                                 "url": \''.$_SERVER["REQUEST_URI"].'?ajax=true\',
                                 "data": function(data) {
-                                   var datafilter= $("form#JqueryDataTableFormFilter").serializeControls();
+                                   var datafilter= $("form#JqueryDataTableFormFilter_'.$ref.'").serializeControls();
                                    $.each(datafilter, function(key, value) {
                                         data[key] = value;
                                     });
@@ -157,9 +181,12 @@ $.each(this.serializeArray(),function(){
                             ]
                         });
                       })
-                  </script>';
+                  ';
             }
-            $html.=$this->Render($View);
+            $this->getInlineScript()->appendScript($script,
+                'text/javascript',
+                array('noescape' => true));
+            $html=$this->Render($View);
             return $html;
         }
         return "";
