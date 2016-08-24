@@ -4,7 +4,7 @@
  * Date: 21/08/2016
  * Time: 15:09
  */
-namespace Datatable;
+namespace Zf3\Jquerydatatable;
 
 return [
     'controller_plugins' => [

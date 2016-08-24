@@ -5,27 +5,16 @@
  * Time: 15:09
  */
 
-namespace Datatable;
+namespace Zf3\Jquerydatatable;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\DependencyIndicatorInterface;
 
-
-class Module
+class Module implements ConfigProviderInterface, DependencyIndicatorInterface
 {
-   /* public function loadConfiguration(MvcEvent $e)
-    {
-        $application   = $e->getApplication();
-        $sm            = $application->getServiceManager();
-        $sharedManager = $application->getEventManager()->getSharedManager();
-        $sharedManager->attach('Zend\Mvc\Controller\AbstractActionController','dispatch',
-                function($e) use ($sm) {
-                    $sm->get('ControllerPluginManager')->get('DataTable')
-                        ->getAdapter($sm->get('Zend\Db\Adapter\Adapter'));exit;
-                },2
-        );
-        
-    }*/
+
     public function onBootstrap(MvcEvent $e)
     {
         $eventManager = $e->getApplication()->getEventManager();
@@ -41,7 +30,7 @@ class Module
 
 
         $sm->get('ViewHelperManager')->setFactory('datatable', function($e) use ($sm) {
-            $viewHelper = new \Datatable\View\Helper\Datatable(
+            $viewHelper = new \Zf3\Jquerydatatable\View\Helper\Datatable(
                 $sm
             );
 
@@ -50,10 +39,10 @@ class Module
     }
     public function getConfig()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return include __DIR__ . '/../config/module.config.php';
     }
 
-    public function getAutoloaderConfig()
+    /*public function getAutoloaderConfig()
     {
         return array(
             'Zend\Loader\StandardAutoloader' => array(
@@ -62,7 +51,7 @@ class Module
                 ),
             ),
         );
-    }
+    }*/
 
 
     public function getControllerPluginConfig() {
@@ -71,5 +60,15 @@ class Module
                 'DataTable' =>Controller\Plugin\DataTable::class,
             )
         );
+    }
+
+    /**
+     * Expected to return an array of modules on which the current one depends on
+     *
+     * @return array
+     */
+    public function getModuleDependencies()
+    {
+        return ['Zend\Paginator','Zend\Db'];
     }
 }

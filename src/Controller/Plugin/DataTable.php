@@ -6,7 +6,7 @@
  * Time: 15:15
  */
 
-namespace Datatable\Controller\Plugin;
+namespace Zf3\Jquerydatatable\Controller\Plugin;
 
 use Zend\Db\Sql\Where;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;

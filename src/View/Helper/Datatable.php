@@ -5,7 +5,7 @@
  * Time: 15:22
  */
 
-namespace Datatable\View\Helper;
+namespace Zf3\Jquerydatatable\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
 use Zend\View\Helper\InlineScript;
