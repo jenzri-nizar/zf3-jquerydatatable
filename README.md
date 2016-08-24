@@ -1,5 +1,5 @@
 # zf3-jquerydatatable
-zend framework3 jquery datatable
+zend framework 3 jquery datatable
 
 #Exemple
 Controller
