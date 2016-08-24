@@ -38,9 +38,9 @@ $radio->setValueOptions(array(
 
 $range = new Element\Range('range');
 $range ->setAttributes(array(
-                'min'  => '0',   // default minimum is 0
-                'max'  => '100', // default maximum is 100
-                'step' => '5',   // default interval is 1
+                'min'  => '0',
+                'max'  => '100',
+                'step' => '5',   
             ));
 $range->setAttribute("class","form-control");
 
