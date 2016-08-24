@@ -1,6 +1,30 @@
 # zf3-jquerydatatable
 zend framework 3 jquery datatable
 
+##Installation
+
+1) Ajouter l'exigence suivante à votre fichier composer.json.
+Dans la section:"require"
+
+```php
+"jenzri-nizar/zf3-jquerydatatable": "^0.1.0"
+```
+2) Ouvrez votre ligne de commande et exécutez
+
+```php
+composer update
+```
+
+Le module doit être enregistré dans **config/modules.config.php**
+```php
+'modules' => array(
+    '...',
+    'Zend\Paginator',
+    'Zend\Db',
+    'Zf3\Jquerydatatable'
+),
+```
+
 #Exemple
 Controller
 ```php
