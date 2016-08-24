@@ -90,7 +90,8 @@ class Datatable extends AbstractHelper
 
             $html='<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
                 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
- ';
+                <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+';
             if(!$ajax){
                 $html.='
                    <script>
@@ -143,9 +144,17 @@ $.each(this.serializeArray(),function(){
                                    console.log(datafilter);
                                 }
                             },
-                            //"ajax": \''.$_SERVER["REQUEST_URI"].'?ajax=true\',
-                            "orderCellsTop": true
-
+                            "orderCellsTop": true,
+                            "dom": "Bfrtip",
+                             buttons: [
+                                {
+                                    "text": "Search",
+                                    "className":"btn btn-default BtnjQueryDataTableFilter",
+                                    "action": function ( e, dt, node, config ) {
+                                        dt.ajax.reload();
+                                    }
+                                }
+                            ]
                         });
                       })
                   </script>';

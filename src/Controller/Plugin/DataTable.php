@@ -8,6 +8,7 @@
 
 namespace Datatable\Controller\Plugin;
 
+use Zend\Db\Sql\Where;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 class DataTable  extends AbstractPlugin
@@ -98,6 +99,14 @@ class DataTable  extends AbstractPlugin
         //$paginator=new \Zend\Paginator\Paginator();
         //$paginator->getAdapter();
         if(isset($_GET['ajax']) && $_GET['ajax']=="true"){
+            $this->AjaxCall($Config);
+            exit;
+        }
+    }
+
+
+    private function AjaxCall($Config){
+
             $columnsKey=array_keys($Config['columns']);
             $DataSelect= $Config['model']->DatatableSearch();
             $order=$_GET['order'];
@@ -117,6 +126,15 @@ class DataTable  extends AbstractPlugin
                     $PredicateSet,
                     \Zend\Db\Sql\Predicate\PredicateSet::COMBINED_BY_OR
                 ));
+            }
+            if($_GET['inputfilter']){
+
+               $Where=$this->AjaxFilter($_GET['inputfilter'],$Config);
+                if(!is_null($Where)){
+                    $DataSelect->where->addPredicate($Where);
+                    $SqlChanged=true;
+                   //echo $DataSelect->getSqlString($this->getAdapter()->getPlatform());
+                }
             }
             if($SqlChanged){
                 // echo $DataSelect->getSqlString($this->getAdapter()->getPlatform());
@@ -170,10 +188,62 @@ class DataTable  extends AbstractPlugin
             $data["recordsTotal"]=$paginator->getTotalItemCount();
             echo json_encode($data);
             exit;
-        }
+
     }
 
+    private function AjaxFilter($param,$Config){
+        $Where=new Where();
+        $ArrayInput=array();
+        $IsWhere=false;
+        foreach($Config['columns'] as $key =>$val)
+        {
+            $ArrayInput[$key]=[];
+            if(array_key_exists("search",$val) &&( array_keys($val['search']) !== range(0, count($val['search']) - 1))){
+                $ArrayInput[$key]=$val['search'];
+            }
+        }
 
+        if(!empty($ArrayInput)){
+            foreach($ArrayInput as $key => $settingSearch){
+                if(array_key_exists($key,$param) && !empty($param[$key])){
+                    $filtertype=strtolower (array_key_exists("type",$settingSearch) ? $settingSearch['type'] :"text");
+                    if($filtertype=="between"){
+                        $from=array_key_exists("from",$param[$key])? $param[$key]['from']:"";
+                        $to=array_key_exists("to",$param[$key])? $param[$key]['to']:"";
+
+                        if($from && $to){
+                            $Where->between($key, $from, $to);
+                            $IsWhere=true;
+                        }
+                    }
+                    else{
+                        $element =array_key_exists("element",$settingSearch) ? $settingSearch['element'] :null;
+                        if($element instanceof \Zend\Form\Element) {
+                            $filtertype = $element->getAttribute("type");
+                            if($filtertype=="multi_checkbox"){
+                                $in=$param[$key];
+                                if(!is_array($in)){
+                                    $in=[$in];
+                                }
+                                $Where->in($key,$in);
+                                $IsWhere=true;
+                            }
+                            else{
+                                $value=$param[$key];
+                                $Where->like($key,"%".strtolower (trim($value))."%");
+                                //$Where->equalTo($key,trim($value));
+                                $IsWhere=true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if($IsWhere)
+            return $Where;
+
+        return null;
+    }
     private function SetDataPaginator($ref,$DataPaginator){
         $this->Configs[$ref]['paginator']=$DataPaginator;
     }
