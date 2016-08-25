@@ -3,19 +3,19 @@ zend framework 3 jquery datatable
 
 ##Installation
 
-1) Ajouter l'exigence suivante à votre fichier composer.json.
+1) Ajouter l'exigence suivante Ã  votre fichier composer.json.
 Dans la section:"require"
 
 ```php
 "jenzri-nizar/zf3-jquerydatatable": "^1.0"
 ```
-2) Ouvrez votre ligne de commande et exécutez
+2) Ouvrez votre ligne de commande et exÃ©cutez
 
 ```php
 composer update
 ```
 
-Le module doit être enregistré dans **config/modules.config.php**
+Le module doit Ãªtre enregistrÃ© dans **config/modules.config.php**
 ```php
 'modules' => array(
     '...',
@@ -122,7 +122,7 @@ View
 ```
 
 
-#Resulta
+#Resultat
 ![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_1.PNG)
 ![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_2.PNG)
 
@@ -191,5 +191,5 @@ $this->DataTable()->setConfig('Album_2',array(
         ));
 ```
 
-#Resulta
+#Resultat
 ![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_3.PNG)
