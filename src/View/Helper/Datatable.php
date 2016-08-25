@@ -108,18 +108,23 @@ class Datatable extends AbstractHelper
             $ajax=$config['ajax'];
             $lang=$config['lang'];
             $search_label=$config['search_label'];
+            $ActionButtons=$config['buttons'];
+            $itemlimit=$config['limit'];
             $View=new \Zend\View\Model\ViewModel();
             $View->setVariables(array(
                 "columns"=>$columns,
                 "paginator"=>$paginator,
                 "ref"=>$ref,
                 "ajax"=>$ajax,
-                "lang"=>$lang
+                "lang"=>$lang,
+                "ActionButtons"=>$ActionButtons,
             ));
 
             $html='';
 
             if(!$ajax){
+
+
                 $script='
 
                       $(function(){
@@ -133,7 +138,19 @@ class Datatable extends AbstractHelper
 
             }
             else{
-                $script='
+                $script='';
+                if(!empty($ActionButtons['template'])){
+                    $btnhtmlTmp=$ActionButtons['template'];
+                    if(!empty($ActionButtons["buttons"])){
+                        foreach($ActionButtons["buttons"] as $btnkey=> $BtnActVal){
+                            $btnClick=array_key_exists("click",$BtnActVal)? $BtnActVal['click']:null;
+                            if($btnClick){
+                                $script.=$btnClick;
+                            }
+                        }
+                    }
+                }
+                $script.='
 
                    $.fn.serializeControls=function(){
 	var keyindex=0;
@@ -163,6 +180,7 @@ $.each(this.serializeArray(),function(){
 
                       $(function(){
                         $("#datatable_'.$ref.'").dataTable({
+                            "iDisplayLength": '.$itemlimit.',
                             "language": {
                                 "url": "http://cdn.datatables.net/plug-ins/1.10.12/i18n/'.$lang.'.json"
                             },

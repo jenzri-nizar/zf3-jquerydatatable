@@ -114,7 +114,13 @@ class DataTable  extends AbstractPlugin
                         'columns' => [],
                         'model' => null,
                         'lang'=>"English",
-                        'search_label'=>"Search"
+                        'search_label'=>"Search",
+                        'limit'=>10,
+                        'buttons'=>[
+                            'class'=>'btn-buttons',
+                            'template' => '',
+                            'buttons'=>[],
+                        ],
         ];
         $Config = array_merge($defaults, $Config);
         if(empty($Config['columns'])){
@@ -167,12 +173,13 @@ class DataTable  extends AbstractPlugin
 
 
     private function AjaxCall($Config){
-
+            $ActionButtons=$Config['buttons'];
             $columnsKey=array_keys($Config['columns']);
             $DataSelect= $Config['model']->DatatableSearch();
             $order=$_GET['order'];
             $SqlChanged=false;
-            if(isset($order[0]['column']) && isset($order[0]['dir'])){
+
+            if(isset($order[0]['column']) && isset($order[0]['dir'])  && count($columnsKey)>$order[0]['column']){
                 $SqlChanged=true;
                 $DataSelect->order($columnsKey[$order[0]['column']]." ".$order[0]['dir']);
             }
@@ -217,7 +224,7 @@ class DataTable  extends AbstractPlugin
             $data["data"]=[];
             $paginator=$Config['paginator'];
             $page=isset($_GET['start'])&& is_numeric($_GET['start']) ? $_GET['start'] :0;
-            $length=isset($_GET['length'])&& is_numeric($_GET['length']) ? $_GET['length'] :10;
+            $length=isset($_GET['length'])&& is_numeric($_GET['length']) ? $_GET['length'] : $Config['limit'];
             $page=($page/$length)+1;
             $paginator->setCurrentPageNumber($page);
             $paginator->setDefaultItemCountPerPage($length);
@@ -235,6 +242,62 @@ class DataTable  extends AbstractPlugin
                             $_item[]="";
                         }
 
+                    }
+                    if(!empty($ActionButtons['template'])){
+
+                        $btnhtmlTmp=$ActionButtons['template'];
+                        if(!empty($ActionButtons["buttons"])){
+                            foreach($ActionButtons["buttons"] as $btnkey=> $BtnActVal){
+                                $btnurl=array_key_exists("url",$BtnActVal)? $BtnActVal['url']:null;
+                                $btnClick=array_key_exists("click",$BtnActVal)? $BtnActVal['click']:null;
+                                $btnhtml=array_key_exists("html",$BtnActVal)? $BtnActVal['html']:$btnkey;
+                                $btnclass=array_key_exists("class",$BtnActVal)? $BtnActVal['class']:"";
+                                $btnattr=array_key_exists("attr",$BtnActVal)? $BtnActVal['attr']:[];
+
+                                $SubAttrHtml="";
+                                if(is_array($btnattr)){
+                                    foreach($btnattr as $attrkey=>$attrval){
+                                        if(preg_match_all("/{([a-zA-Z_]*)}/", $attrval, $output_array)){
+                                            if(is_array($output_array[1]) && $output_array[1]){
+                                                foreach($output_array[1] as $itemV){
+                                                    if(is_object($item) &&  property_exists ($item,$itemV)){
+                                                        $attrval=str_replace("{".$itemV."}",$item->{$itemV},$attrval) ;
+                                                    }
+                                                    if(is_array($item) &&  array_key_exists ($itemV,$item)){
+                                                        $attrval=str_replace("{".$itemV."}",$item[$itemV],$attrval) ;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        $SubAttrHtml.=" $attrkey='$attrval' ";
+                                    }
+                                }
+
+                                $Subbtnhtml=$btnhtml;
+                                if($btnurl){
+                                    if(preg_match_all("/{([a-zA-Z_]*)}/", $btnurl, $output_array)){
+                                        if(is_array($output_array[1]) && $output_array[1]){
+                                            foreach($output_array[1] as $itemV){
+                                                if(is_object($item) &&  property_exists ($item,$itemV)){
+                                                    $btnurl=str_replace("{".$itemV."}",$item->{$itemV},$btnurl) ;
+                                                }
+                                                if(is_array($item) &&  array_key_exists ($itemV,$item)){
+                                                    $btnurl=str_replace("{".$itemV."}",$item[$itemV],$btnurl) ;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $Subbtnhtml="<a href='$btnurl' class='$btnclass' $SubAttrHtml >$Subbtnhtml</a>";
+                                }
+                                if($btnClick){
+                                    $SetScripListner=$btnClick;
+                                }
+
+                                $btnhtmlTmp=str_replace("{".$btnkey."}",$Subbtnhtml,$btnhtmlTmp);
+                            }
+                        }
+                        $_item[]="$btnhtmlTmp";
+                        //$_item[]="Action";
                     }
                     $data["data"][]=$_item;
                 }

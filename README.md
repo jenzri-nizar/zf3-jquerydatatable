@@ -125,3 +125,71 @@ View
 #Resulta
 ![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_1.PNG)
 ![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_2.PNG)
+
+#Exemple 2
+Controller
+```php
+$this->DataTable()->setConfig('Album_2',array(
+            "columns"=>array(
+                "id"=>[
+                    "label"=>"Id",
+                    "search"=>
+                        [
+                            "element"=>$Text
+                        ]
+
+                ],
+                "artist" =>[
+                    "label"=>"Artist",
+                    "search"=>
+                        [
+                            "element"=>$radio
+                        ]
+
+                ],
+                "title"=>[
+                    "label"=>"Title",
+                    "search"=>
+                        [
+                            "element"=>$Text
+
+                        ]
+                ],
+            ),
+            "search_label"=>"Recherche",
+            "lang"=>"fr",
+            "limit"=>5,
+            "ajax"=>true,
+            "model"=>$this->getEvent()->getApplication()->getServiceManager()->get('AlbumTable'),
+            "buttons"=>[
+                "class"=>"btn-buttons",
+                "template" => "{update} {delete}",
+                "buttons" => [
+                    "delete"=>[
+                        "url"=>"#/id={id}",
+                        "click"=>"$(document).on('click','.ClassDeleteAjax',function(){alert('test');return false;});",
+                        "html"=>"<span class='btn btn-danger glyphicon glyphicon-trash'></span>",
+                        "class"=>"ClassDeleteAjax",
+                        "attr"=>[
+                            "data-id"=>"{id}",
+                            "data-text"=>"Text",
+                            "data-artist"=>"{artist}",
+                        ]
+                    ],
+                    "update" => [
+                        "url"=>"#/id={id}&artist={artist}",
+                        "click"=>"",
+                        "html"=>"<span class='btn btn-success glyphicon glyphicon-edit'></span>",
+                        "class"=>"ClassUpdate",
+                        "attr"=>[
+                            "data-id"=>"{id}",
+                            "data-text"=>"Test",
+                        ]
+                    ],
+                ],
+            ]
+        ));
+```
+
+#Resulta
+![alt tag](https://raw.githubusercontent.com/jenzri-nizar/zf3-jquerydatatable/master/assets/screenshot_3.PNG)

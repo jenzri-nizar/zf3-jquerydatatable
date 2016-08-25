@@ -11,6 +11,8 @@ foreach($columns as $key =>$val)
         $IsCustomSearch=true;
     }
 }
+
+$SetScripListner="";
 ?>
 <div class="col-md-12">
     <form id="JqueryDataTableFormFilter_<?php echo $ref?>">
@@ -26,6 +28,9 @@ foreach($columns as $key =>$val)
                     <?php  echo array_key_exists("label",$val) ? $val['label'] : $key?>
                 </th>
                 <?php
+            }
+            if(!empty($ActionButtons['template'])){
+                echo"<th></th>";
             }
             ?>
         </tr>
@@ -100,6 +105,9 @@ foreach($columns as $key =>$val)
                     echo"</td>";
 
                 }
+                if(!empty($ActionButtons['template'])){
+                    echo"<td></td>";
+                }
                 ?>
 
             </tr>
@@ -129,6 +137,60 @@ foreach($columns as $key =>$val)
                         </td>
                         <?php
                     }
+                    if(!empty($ActionButtons['template'])){
+                        $btnhtmlTmp=$ActionButtons['template'];
+                        if(!empty($ActionButtons["buttons"])){
+                            foreach($ActionButtons["buttons"] as $btnkey=> $BtnActVal){
+                                $btnurl=array_key_exists("url",$BtnActVal)? $BtnActVal['url']:null;
+                                $btnClick=array_key_exists("click",$BtnActVal)? $BtnActVal['click']:null;
+                                $btnhtml=array_key_exists("html",$BtnActVal)? $BtnActVal['html']:$btnkey;
+                                $btnclass=array_key_exists("class",$BtnActVal)? $BtnActVal['class']:"";
+                                $btnattr=array_key_exists("attr",$BtnActVal)? $BtnActVal['attr']:[];
+
+                                $SubAttrHtml="";
+                                if(is_array($btnattr)){
+                                    foreach($btnattr as $attrkey=>$attrval){
+                                        if(preg_match_all("/{([a-zA-Z_]*)}/", $attrval, $output_array)){
+                                            if(is_array($output_array[1]) && $output_array[1]){
+                                                foreach($output_array[1] as $itemV){
+                                                    if(is_object($item) &&  property_exists ($item,$itemV)){
+                                                        $attrval=str_replace("{".$itemV."}",$item->{$itemV},$attrval) ;
+                                                    }
+                                                    if(is_array($item) &&  array_key_exists ($itemV,$item)){
+                                                        $attrval=str_replace("{".$itemV."}",$item[$itemV],$attrval) ;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        $SubAttrHtml.=" $attrkey='$attrval' ";
+                                    }
+                                }
+
+                                $Subbtnhtml=$btnhtml;
+                                if($btnurl){
+                                    if(preg_match_all("/{([a-zA-Z_]*)}/", $btnurl, $output_array)){
+                                        if(is_array($output_array[1]) && $output_array[1]){
+                                            foreach($output_array[1] as $itemV){
+                                                if(is_object($item) &&  property_exists ($item,$itemV)){
+                                                    $btnurl=str_replace("{".$itemV."}",$item->{$itemV},$btnurl) ;
+                                                }
+                                                if(is_array($item) &&  array_key_exists ($itemV,$item)){
+                                                    $btnurl=str_replace("{".$itemV."}",$item[$itemV],$btnurl) ;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $Subbtnhtml="<a href='$btnurl' class='$btnclass' $SubAttrHtml >$Subbtnhtml</a>";
+                                }
+                                if($btnClick){
+                                    $SetScripListner=$btnClick;
+                                }
+
+                                $btnhtmlTmp=str_replace("{".$btnkey."}",$Subbtnhtml,$btnhtmlTmp);
+                            }
+                        }
+                        echo"<td>$btnhtmlTmp</td>";
+                    }
                     ?>
                 </tr>
                 <?php
@@ -138,3 +200,8 @@ foreach($columns as $key =>$val)
     </table>
     </form>
 </div>
+<?php
+$this->inlinescript()->appendScript($SetScripListner,
+    'text/javascript',
+    array('noescape' => true));
+?>
