@@ -7,7 +7,7 @@ zend framework 3 jquery datatable
 Dans la section:"require"
 
 ```php
-"jenzri-nizar/zf3-jquerydatatable": "^0.1.0"
+"jenzri-nizar/zf3-jquerydatatable": "^1.0"
 ```
 2) Ouvrez votre ligne de commande et exécutez
 
