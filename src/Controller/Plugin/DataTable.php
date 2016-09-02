@@ -195,7 +195,7 @@ class DataTable  extends AbstractPlugin
                     \Zend\Db\Sql\Predicate\PredicateSet::COMBINED_BY_OR
                 ));
             }
-            if($_GET['inputfilter']){
+            if(array_key_exists('inputfilter',$_GET) && $_GET['inputfilter']){
 
                $Where=$this->AjaxFilter($_GET['inputfilter'],$Config);
                 if(!is_null($Where)){
